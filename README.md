@@ -1,5 +1,5 @@
-# Projeto Conceitual de Banco de Dados - Oficina
-Este repositório contém a documentação e os refinamentos de um projeto conceitual de banco de dados voltado para um sistema de abertura de OS para oficina. O objetivo principal é transformar os requisitos de negócio em um modelo conceitual claro, estruturado e alinhado com as boas práticas de modelagem de dados.
+# Projeto Conceitual de Banco de Dados - Oficina Mecanica
+Este repositório contém a documentação e os refinamentos de um projeto conceitual de banco de dados para um sistema de gestão de ordens de serviço (OS) em uma oficina mecânica. O objetivo é criar um modelo conceitual claro e estruturado, transformando os requisitos de negócio em um banco de dados funcional, que possibilite o gerenciamento eficiente das OS, clientes, veículos, serviços e pagamento
 
 ##  Conecte-se comigo 
 <i> 
@@ -13,7 +13,7 @@ Este repositório contém a documentação e os refinamentos de um projeto conce
 <br />
 [![Status](https://img.shields.io/badge/status-%20concluido-blue)](#)
 
----
+
 ## Sumario
 - 1.0 Levantamento de Requisitos
 - 1.1 Requisitos Funcionais
@@ -22,57 +22,91 @@ Este repositório contém a documentação e os refinamentos de um projeto conce
 - 1.4 Entidades e Atributos
 - 1.5 Relacionamentos
 - 2.0 Refinando o Modelo Conceitual
-- 2.1 Criação da Entidade Associativa "Item_Pedido"
-- 2.2 Adição de Status do Pedido
+- 2.1 Criação da Entidade Associativa "Item_OS"
+- 2.2 Adição de Status da OS
 - 2.3 Registro da Forma de Pagamento 
-- 2.4 Registro da Entrega do Produto
-- 2.5 Registro da Transportadora do Produto
-- 3.0 Caso de Uso - Compra de Produtos
-- 3.1 Loja Virtual de Eletrônicos
+- 2.4 Registro de Entrega do Veiculo
+- 3.0 Caso de Uso - Sistema de Abertura de Ordem de Serviço
+- 3.1 Processo de Reparação de Veiculo
 
 ### 1.0 Levantamento de Requisitos
-Todos os requisitos aqui destacados foram levantados com base no modulo Refinando um Projeto Conceitual de Banco de Dados - Oficina, parte do Bootcamp Randstad Analise de Dados da DIO. O objetivo é desenvolver um projeto conceitual de banco de dados para criação de um sistema de ordem de serviço para oficina que permita o gerenciamento eficiente de aberturas de ordens de serviço, clientes, veiculos, pagamentos e etc...
+Este projeto foi desenvolvido para criar um sistema de gerenciamento de Ordens de Serviço (OS) para uma oficina mecânica. O objetivo principal é modelar e refinar o banco de dados de forma a refletir os requisitos de negócio e otimizar os processos operacionais da oficina.
  
+
 ### 1.1 Requisitos Funcionais
-Este repositório contém o projeto de banco de dados para um sistema de controle e gerenciamento da execução de ordens de serviço(OS) em uma oficina mecânica. O objetivo é modelar, refinar e estruturar o projeto conceitual que dará suporte ao sistema, com foco na organização de processos, registro de serviços e cálculo de valores.
-
-1. Clientes levam seus veículos à oficina para conserto ou revisões periódicas.
-
-2. Recepção do veículo e designação a uma equipe de mecânicos;
-
-3. Identificação dos serviços necessários e geração da Ordem de Serviço (OS);
-
-4. Consulta à tabela de mão-de-obra e valores de peças para calcular o custo total da OS;
-
-5. O cliente autoriza a execução dos serviços;
-
-6. A mesma equipe executa os serviços e atualiza o status da OS.
+Os requisitos funcionais do banco de dados são definidos com o intuito de suportar o processo de atendimento e manutenção dos veículos dos clientes. O sistema deve abranger os seguintes fluxos:
+1. Cadastro de Clientes: A oficina deve registrar informações detalhadas sobre seus clientes, tanto pessoas físicas quanto jurídicas.
+2. Cadastro de Veículos: Cada cliente pode ter um ou mais veículos registrados no sistema.
+3. Abertura de Ordem de Serviço (OS): O cliente solicita a abertura de uma ordem de serviço para reparo ou revisão de seu veículo.
+4. Atribuição de Serviços: A oficina define os serviços a serem executados, registrando os tipos de serviços e peças necessárias.
+5. Cálculo de Custos: O sistema deve calcular o valor total da OS com base nos serviços e peças utilizadas.
+6. Pagamento e Status da OS: O sistema deve registrar os pagamentos efetuados e permitir o acompanhamento do status da OS (ex: em andamento, concluída).
+7. Entrega do Veículo: Após a conclusão dos serviços, o veículo é entregue ao cliente.
 
 ### 1.2 Regras de Negócio
-O banco deve ser estruturado para refletir corretamente os relacionamentos entre as principais entidades envolvidas no processo de abertura de ordem de serviço, garantindo a integridade dos dados e o funcionamento adequado dos fluxos operacionais. Essa estrutura inicial esta sendo desenvolvida conforme as regras de negócio.
+Em uma oficina mecânica, as regras de negócio desempenham um papel fundamental para garantir que os processos operacionais sejam realizados de forma eficiente, precisa e sem erros. Elas ajudam a organizar informações de clientes, veículos, serviços prestados e estoque de peças, garantindo que o sistema funcione de acordo com as necessidades da oficina e do cliente. Estas regras de negócio têm como objetivo garantir a integridade dos processos operacionais da oficina, otimizando a gestão de ordens de serviço e permitindo o acompanhamento eficiente da execução dos serviços, custos e pagamentos, com transparência para os clientes e para a equipe da oficina.
 
-1. Relacionamento Cliente–Serviço
-Cada cliente pode realizar múltiplos serviços ao longo do tempo, caracterizando uma relação do tipo um-para-muitos. Essa estrutura permite o rastreamento do histórico de compras de cada cliente, bem como a análise de comportamento de consumo.
+- Cadastro de Clientes e Veículos:
+Os clientes podem registrar um ou mais veículos na oficina mecânica. Cada veículo possui um identificador único e está associado a um cliente. Para cada veículo, são registrados dados como modelo, ano de fabricação e placa.
 
-2. Relacionamento Pedido–Produto
-Um pedido pode conter múltiplos produtos, e cada produto pode estar presente em diversos pedidos distintos, estabelecendo uma relação muitos-para-muitos. Para representar essa relação, é necessária a utilização de uma entidade associativa, como Item_Pedido, que armazena informações adicionais como quantidade, preço no momento da compra e possíveis descontos aplicados.
+- Designação de Equipe de Mecânicos:
+Ao receber um veículo para reparo ou revisão, a oficina designa uma equipe de mecânicos para avaliar e executar os serviços necessários. Cada equipe é composta por mecânicos especializados, e os serviços são atribuídos com base na especialidade de cada membro da equipe.
 
-3. Gestão de Estoque
-O sistema deve implementar uma rotina automática de atualização de estoque. A quantidade disponível de cada produto deve ser decrementada com base na quantidade adquirida em pedidos concluídos. Isso evita inconsistências e possibilita o controle preciso da disponibilidade de produtos na plataforma.
+- Identificação de Serviços:
+A equipe de mecânicos realiza uma avaliação inicial do veículo e identifica os serviços a serem executados. Com base nessa avaliação, é criada uma Ordem de Serviço (OS) que inclui a lista de serviços, peças necessárias, o valor estimado de mão de obra, a data de entrega e o status da OS.
 
-4. Produtos Vendidos por Terceiros
-Os produtos cadastrados na plataforma podem ser vendidos tanto pela empresa responsável pelo sistema quanto por vendedores terceiros. Cada produto deve manter um vínculo direto com o seu respectivo vendedor, permitindo o gerenciamento individualizado de estoque, preço e condições de venda.
+- Geração da OS:
+Cada Ordem de Serviço (OS) gerada para um veículo deve conter os seguintes dados obrigatórios:
+Número da OS: Identificador único gerado automaticamente pelo sistema.
+Data de Emissão: Data em que a OS foi gerada.
+Valor de Mão de Obra: O valor para execução dos serviços, calculado com base na tabela de referência de mão-de-obra.
+Valor das Peças: Valor das peças necessárias para a execução do serviço, conforme consulta à tabela de preços de peças.
+Data de Conclusão Estimada: A data prevista para a entrega do veículo ao cliente.
+Status da OS: Indicação do status atual da OS (ex: em análise, em andamento, concluída, aguardando peças).
 
-5. Pagamentos
-Cada pedido deve possuir um pagamento associado, contendo informações como data, forma de pagamento (ex: cartão, boleto, Pix), e status (pago, pendente, recusado). A associação entre pedido e pagamento é do tipo um-para-um e é essencial para o controle financeiro e liberação da entrega.
+- Autorização para Execução:
+A execução dos serviços será iniciada somente após a autorização do cliente. O cliente pode autorizar a execução total ou parcial dos serviços descritos na OS. O sistema registra o momento da autorização e qualquer alteração posterior no escopo dos serviços.
 
-6. Gestão de Entregas
-O sistema deve controlar a entrega de cada pedido, mantendo registros como:
-- Status da entrega (ex: em separação, em transporte, entregue, devolvido)
-- Código de rastreio, fornecido pela transportadora para que o cliente possa acompanhar o envio.
-- A entidade Entrega deve estar diretamente associada a um pedido e atualizada conforme os eventos logísticos ocorram.
+- Execução dos Serviços:
+A equipe de mecânicos é responsável por executar os serviços conforme a OS. Cada mecânico possui um código único, nome, endereço e especialidade, que devem ser registrados para controle e acompanhamento. Durante a execução, o status da OS é atualizado conforme o progresso dos serviços (ex: em andamento, aguardando peça, concluído).
 
-### 1.3 Modelo Conceitual – E-commerce
+- Avaliação de Serviços:
+A equipe de mecânicos deve avaliar e registrar quaisquer alterações necessárias nos serviços durante a execução (por exemplo, se for identificado um serviço adicional ou alteração no valor das peças). A OS será atualizada conforme essas mudanças, e o cliente será notificado para autorizar os ajustes antes da execução.
+
+- Cálculo e Controle do Custo de Mão de Obra:
+O sistema deve calcular automaticamente o valor de cada serviço com base em uma tabela de referência de mão de obra, que define o custo de cada tipo de serviço realizado. O custo é calculado com base no tempo estimado para a execução do serviço e no valor da hora trabalhada, conforme a tabela de preços da oficina.
+
+- Cálculo do Custo de Peças:
+O custo de peças necessárias para o serviço será calculado com base no valor unitário de cada peça registrada no sistema. O valor total das peças será somado ao valor da mão de obra para compor o custo total da OS.
+
+- Status e Conclusão da OS:
+Cada OS deve ter um status que reflete seu estágio no processo de execução. Os principais status da OS são:
+Em Análise: Quando a OS está sendo analisada pela equipe de mecânicos, mas ainda não foi autorizada pelo cliente.
+Em Andamento: Quando o serviço está sendo executado.
+Aguardando Peças: Quando a execução do serviço está aguardando a entrega de peças.
+Concluída: Quando todos os serviços foram executados e o veículo está pronto para ser entregue ao cliente.
+Cancelada: Caso o cliente ou a oficina cancele a OS antes da conclusão dos serviços.
+
+- Data de Conclusão:
+Cada OS deve ter uma data de conclusão estimada. Essa data pode ser alterada conforme o andamento dos serviços, com o cliente sendo informado sobre qualquer alteração no prazo.
+
+- Entrega ao Cliente:
+Após a conclusão dos serviços, a OS é finalizada, e o veículo é entregue ao cliente. O cliente pode ser notificado por e-mail ou SMS quando o veículo estiver pronto para ser retirado, e o status da OS é atualizado para Concluída.
+
+- Registro dos Mecânicos:
+Cada mecânico da oficina é cadastrado no sistema com as seguintes informações:
+Código do Mecânico: Identificador único.
+Nome: Nome completo do mecânico.
+Endereço: Endereço de trabalho ou residência.
+Especialidade: A especialidade do mecânico (ex: motor, suspensão, eletrônica, etc.).
+
+- Atribuição de Mecânicos às OS:
+Cada OS é atribuída a uma equipe de mecânicos, com base nas especialidades necessárias para a execução dos serviços identificados na avaliação inicial do veículo.
+
+Controle de Pagamento:
+Após a execução dos serviços e entrega do veículo, o cliente deve efetuar o pagamento do valor total da OS, que inclui o custo de mão de obra e peças. O sistema permite o registro de pagamentos parciais ou totais, com as formas de pagamento sendo registradas (ex: dinheiro, cartão de crédito, Pix).
+
+### 1.3 Modelo Conceitual – Oficina Mecanica
 Abaixo está a representação do modelo conceitual, usando a notação Entidade-Relacionamento (ER) com base nos requisitos levantados.
 <div align="center">
     <img src="Files/Diagrama - Projeto Conceitual de Banco de Dados - E-commerce.png" alt="Create a resource" width="600"/>
