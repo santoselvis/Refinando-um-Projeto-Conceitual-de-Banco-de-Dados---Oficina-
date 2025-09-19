@@ -31,7 +31,6 @@ Este repositório contém a documentação e os refinamentos de um projeto conce
 
 ### 1.0 Levantamento de Requisitos
 Este projeto foi desenvolvido para criar um sistema de gerenciamento de Ordens de Serviço (OS) para uma oficina mecânica. O objetivo principal é modelar e refinar o banco de dados de forma a refletir os requisitos de negócio e otimizar os processos operacionais da oficina.
- 
 
 ### 1.1 Requisitos Funcionais
 Os requisitos funcionais do banco de dados são definidos com o intuito de suportar o processo de atendimento e manutenção dos veículos dos clientes. O sistema deve abranger os seguintes fluxos:
