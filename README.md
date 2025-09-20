@@ -106,7 +106,7 @@ Controle de Pagamento:
 Após a execução dos serviços e entrega do veículo, o cliente deve efetuar o pagamento do valor total da OS, que inclui o custo de mão de obra e peças. O sistema permite o registro de pagamentos parciais ou totais, com as formas de pagamento sendo registradas (ex: dinheiro, cartão de crédito, Pix).
 
 ### 1.3 Modelo Conceitual – Oficina Mecanica
-Abaixo está a representação do modelo conceitual, usando a notação Entidade-Relacionamento (ER) com base nos requisitos levantados.
+Abaixo está a representação visual do modelo conceitual, usando a notação Entidade-Relacionamento (ER) com base nos requisitos levantados.
 <div align="center">
     <img src="Files/Diagrama - Projeto Conceitual de Banco de Dados - E-commerce.png" alt="Create a resource" width="600"/>
 </div>
@@ -116,35 +116,58 @@ Abaixo iremos especificar as entidades, seus atributos, e respectivos relacionam
 
 ***Cliente***
 - id_cliente (PK)
+- nome
 - tipo_cliente
+- contato
 - endereco
 - email
 
-***Cliente_PF (Entidade Fraca)***
+***Veiculo***
+- id_veiculo (PK)
 - Cliente_id_cliente (FK)
-- nome
-- cpf
-- data_nascimento
-- celular
+- marca
+- modelo
+- ano
+- chassi
+- placa
 
-***Cliente_PJ (Entidade Fraca)***
+***OS***
+- id_os (PK)
+- Veiculo_id_veiculo (FK)
 - Cliente_id_cliente (FK)
-- razao_social
-- cnpj
-- inscricao_estadual
-- telefone
+- status_os
+- valor_orcado
+- valor_final
+- data_abertura
+- data_previsao
+- data_fechamento
+- notifica_cliente
 
-***Fornecedor***
-- id_fornecedor (PK)
-- razao_social
-- endereco
-- cnpj
-
-***Produto***
-- id_produto (PK)
+***Servico***
+- id_servico (PK)
+- Tabela_Preco_id_tabela (FK)
 - descricao
-- preco
-- estoque
+- valor_servico
+- tempo_servico
+
+***Tabela_Preco***
+- id_tabela (PK)
+- valor_hora
+- vigencia_inicio
+- vigencia_fim
+
+***Servico_Executado (Relacionamento - OS + Servico)***
+- id_servico (PK)
+- Tabela_Preco_id_tabela (FK)
+- descricao
+- valor_servico
+- tempo_servico
+
+***Pecas***
+- id_pecas (PK)
+- descricao
+- preco_unitario
+- codigo_fabricante
 
 ***Pedido***
 - id_pedido (PK)
