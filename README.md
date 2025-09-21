@@ -109,7 +109,7 @@ Após a execução dos serviços e entrega do veículo, o cliente deve efetuar o
 ### 1.3 Modelo Conceitual – Oficina Mecanica
 Abaixo está a representação visual do modelo conceitual, usando a notação Entidade-Relacionamento (ER) com base nos requisitos levantados.
 <div align="center">
-    <img src="Files/Diagrama - Projeto Conceitual de Banco de Dados - E-commerce.png" alt="Create a resource" width="600"/>
+    <img src="Files/Diagrama - Projeto Conceitual de Banco de Dados - Oficina Mecanica.png" alt="Create a resource" width="600"/>
 </div>
 
 ### 1.4 Entidades e Atributos
@@ -132,7 +132,7 @@ Abaixo iremos especificar as entidades, seus atributos, e respectivos relacionam
 - chassi
 - placa
 
-***OS***
+***Ordem_Servico***
 - id_ordemservico (PK)
 - Veiculo_id_veiculo (FK)
 - Status_OS_idStatus_OS (FK)
@@ -223,7 +223,6 @@ Abaixo iremos especificar as entidades, seus atributos, e respectivos relacionam
 Os relacionamentos entre entidades são tão essenciais quanto a definição das próprias entidades. Eles representam as interações e dependências entre os elementos do sistema, estruturando os fluxos de informação e garantindo a integridade dos dados.
 
 No caso da oficina mecânica, a entidade Cliente pode possuir vários veículos cadastrados, e cada Veículo pode gerar múltiplas Ordens de Serviço (OS). Cada OS pode envolver diferentes serviços, peças, pagamentos e mecânicos responsáveis. Para tratar essas relações muitos-para-muitos, utilizamos entidades associativas como OrdemServico_Servico, OrdemServico_Peca e Equipe_OS, que registram informações adicionais como quantidade, autorização do cliente e função do mecânico. Abaixo os relacionamentos do modelo:
-
 - Cliente 1:N Veículo – Um cliente pode cadastrar vários veículos.
 
 - Veículo 1:N Ordem_Servico – Um veículo pode gerar diversas ordens de serviço.
