@@ -22,11 +22,12 @@ Este repositório contém a documentação e os refinamentos de um projeto conce
 - 1.4 Entidades e Atributos
 - 1.5 Relacionamentos
 - 2.0 Refinando o Modelo Conceitual
-- 2.1 Criação da Entidade Associativa "Item_OS"
+- 2.1 Criação da Entidade Associativa "Servico_Executado"
 - 2.2 Adição de Status da OS
 - 2.3 Registro da Forma de Pagamento 
 - 2.4 Registro de Entrega do Veiculo
-- 3.0 Caso de Uso - Sistema de Abertura de Ordem de Serviço
+- 2.5 Registro de Alterações na OS
+- 3.0 Caso de Uso - Abertura de Ordem de Serviço
 - 3.1 Processo de Reparação de Veiculo
 
 ### 1.0 Levantamento de Requisitos
@@ -102,7 +103,7 @@ Especialidade: A especialidade do mecânico (ex: motor, suspensão, eletrônica,
 - Atribuição de Mecânicos às OS:
 Cada OS é atribuída a uma equipe de mecânicos, com base nas especialidades necessárias para a execução dos serviços identificados na avaliação inicial do veículo.
 
-Controle de Pagamento:
+- Controle de Pagamento:
 Após a execução dos serviços e entrega do veículo, o cliente deve efetuar o pagamento do valor total da OS, que inclui o custo de mão de obra e peças. O sistema permite o registro de pagamentos parciais ou totais, com as formas de pagamento sendo registradas (ex: dinheiro, cartão de crédito, Pix).
 
 ### 1.3 Modelo Conceitual – Oficina Mecanica
@@ -117,7 +118,7 @@ Abaixo iremos especificar as entidades, seus atributos, e respectivos relacionam
 ***Cliente***
 - id_cliente (PK)
 - nome
-- tipo_cliente
+- tipo_cliente (PF ou PJ)
 - contato
 - endereco
 - email
@@ -132,16 +133,19 @@ Abaixo iremos especificar as entidades, seus atributos, e respectivos relacionam
 - placa
 
 ***OS***
-- id_os (PK)
+- id_ordemservico (PK)
 - Veiculo_id_veiculo (FK)
-- Cliente_id_cliente (FK)
-- status_os
+- Status_OS_idStatus_OS (FK)
 - valor_orcado
 - valor_final
 - data_abertura
 - data_previsao
 - data_fechamento
-- notifica_cliente
+- notifica_cliente (boolean)
+
+***Status_OS***
+- idstatus_os (PK)
+- descricao
 
 ***Servico***
 - id_servico (PK)
@@ -157,11 +161,12 @@ Abaixo iremos especificar as entidades, seus atributos, e respectivos relacionam
 - vigencia_fim
 
 ***Servico_Executado (Relacionamento - OS + Servico)***
-- id_servico (PK)
-- Tabela_Preco_id_tabela (FK)
-- descricao
-- valor_servico
-- tempo_servico
+- OS_id_ordemservico (FK)
+- Servico_id_servico (FK)
+- quantidade
+- valor_total
+- autorizacao_cliente (boolean)
+- data_autorizacao
 
 ***Pecas***
 - id_pecas (PK)
@@ -169,118 +174,144 @@ Abaixo iremos especificar as entidades, seus atributos, e respectivos relacionam
 - preco_unitario
 - codigo_fabricante
 
-***Pedido***
-- id_pedido (PK)
-- Cliente_id_cliente (FK)
-- Produto_id_produto (FK)
-- Entrega_id_entrega (FK)
-- data_pedido
-- status_pedido
-- valor_pedido
+***Estoque***
+- id_estoque (PK)
+- Pecas_id_pecas (FK)
+- quantidade_atual 
+
+***Itens_Pecas (Relacionamento - Pecas + OS)***
+- OS_id_ordemservico (FK)
+- Pecas_id_pecas (FK)
+- quantidade
+- valor_total
+- autorizacao_cliente (boolean)
+- data_autorizacao
+
+***Mecanico***
+- id_mecanico (PK)
+- nome
+- especialidade
+- endereco
+
+***Equipe_OS (Relacionamento - Mecanico + OS)***
+- id_equipe (PK)
+- OS_id_ordemservico (FK)
+- Mecanico_id_mecanico (FK)
+- funcao
 
 ***Pagamento***
 - id_pagamento (PK)
-- Pedido_id_pedido (FK)
-- forma_pagamento
+- OS_id_ordemservico (FK)
+- Forma_Pagamento_idforma_pagamento (FK)
+- valor_pago
 - data_pagamento
-- status_pagamento
 
-***Item_Pedido (Entidade Associativa)***
-- id_pedido (FK)
-- id_produto (FK)
-- quantidade
-- preco_unitario
+***Forma_Pagamento***
+- idforma_pagamento (PK)
+- descricao
 
-***Entrega***
-- id_entrega (PK)
-- status
-- data_entrega
-- previsao_entrega
-- rastreio
-- endereco_entrega
+***Alteracao***
+- id_alteracao
+- OS_id_ordemservico (FK)
+- tipo_alteracao
+- descricao_alteracao
+- valor_alteracao
+- data_alteracao
+- status_alteracao
 
 ### 1.5 Relacionamentos
-Os relacionamentos entre entidades são tão essenciais quanto a definição das próprias entidades. Eles representam as interações e dependências entre os elementos do sistema, sendo responsáveis por estruturar os fluxos de informação e garantir a integridade dos dados. Citando por exemplo a nossa modelagem de um e-commerce, a entidade Cliente pode realizar vários Pedidos, enquanto cada Pedido está associado a um ou mais Produtos. Essa relação muitos-para-muitos entre Pedido e Produto geralmente é intermediada por uma entidade associativa, como Item do Pedido, que também armazena informações contextuais, como quantidade e preço unitário. Da mesma forma, um Pedido pode estar vinculado a um Pagamento e a um Endereço de Entrega, estabelecendo relações um-para-um ou um-para-muitos, dependendo da lógica de negócio.
+Os relacionamentos entre entidades são tão essenciais quanto a definição das próprias entidades. Eles representam as interações e dependências entre os elementos do sistema, estruturando os fluxos de informação e garantindo a integridade dos dados.
 
-- **Cliente 1:N Pedido** – Um cliente pode fazer vários pedidos.
-- **Fornecedor N:M Produto** - Representado pela entidade associativa "Fornecedor_Produto".
-- **Pedido N:M Produto** – Representado pela entidade associativa "Item_Pedido".
-- **Pedido 1:N Pagamento** – Cada pedido possui um ou varios pagamentos associados.
-- **Produto N:M Estoque** - Representado pela entidade associativa "Produto_Estoque".
-- **Pedido 1:N Entrega** - Cada pedido possui uma ou varias entregas.
-- **Entrega 1:N Trasportadora** - Uma entrega possui uma ou varias transportadoras vinculadas.
+No caso da oficina mecânica, a entidade Cliente pode possuir vários veículos cadastrados, e cada Veículo pode gerar múltiplas Ordens de Serviço (OS). Cada OS pode envolver diferentes serviços, peças, pagamentos e mecânicos responsáveis. Para tratar essas relações muitos-para-muitos, utilizamos entidades associativas como OrdemServico_Servico, OrdemServico_Peca e Equipe_OS, que registram informações adicionais como quantidade, autorização do cliente e função do mecânico. Abaixo os relacionamentos do modelo:
+
+- Cliente 1:N Veículo – Um cliente pode cadastrar vários veículos.
+
+- Veículo 1:N Ordem_Servico – Um veículo pode gerar diversas ordens de serviço.
+
+- Ordem_Servico N:M Serviço – Representado pela entidade associativa Servico_Executado, que armazena quantidade, valor total e autorização do cliente.
+
+- Ordem_Servico N:M Peça – Representado pela entidade associativa Itens_Pecas, que registra peças utilizadas, quantidades e valores.
+
+- Ordem_Servico N:M Mecânico – Representado pela entidade associativa Equipe_OS, que define os mecânicos responsáveis e suas funções.
+
+- Ordem_Servico 1:N Pagamento – Cada ordem pode ser liquidada com um ou mais pagamentos.
+
+- Pagamento N:1 Forma_Pagamento – Cada pagamento está vinculado a uma forma específica (dinheiro, cartão, Pix etc.).
+
+- Pecas 1:N Estoque – Cada peça cadastrada está associada ao controle de estoque.
+
+- Ordem_Servico 1:N Alteracao – Uma OS pode sofrer diversas alterações, registrando histórico e valores adicionais.
+
+- Ordem_Servico N:1 Status_OS – Cada OS possui um status definido em tabela de domínio (Ex: Em Análise, Em Andamento, Concluída, Cancelada).
 
 ### 2.0 Refinando o Modelo Conceitual
-A partir deste momento, serão registrados os aprimoramentos e ajustes efetuados após a elaboração inicial do modelo conceitual, fundamentados nas diretrizes apresentadas ao longo do módulo. Outros refinamentos poderão ser realizados conforme novos requisitos forem identificados, ou correções sejam propostas no modulo.
+A partir deste momento, registramos os aprimoramentos e ajustes efetuados no modelo conceitual da oficina mecânica, com base nos requisitos de negócio. Outros refinamentos poderão ser incorporados conforme novos requisitos forem identificados.
 
-### 2.1 Criação da Entidade Associativa "Item_Pedido"
-Durante a modelagem do sistema de e-commerce, identificou-se a necessidade de representar de forma mais precisa a relação muitos-para-muitos entre as entidades Pedido e Produto. Essa relação, por sua natureza, envolve não apenas a associação entre os registros, mas também informações específicas de cada instância de produto dentro de um pedido.
-- Motivação: A relação muitos-para-muitos entre Pedido e Produto precisava ser melhor representada.
-- Solução: Criamos a entidade associativa "Item_Pedido", permitindo registrar quantidade e preço por item no pedido.
+### 2.1 Criação da Entidade Associativa "Servico_Executado"
+Identificamos a necessidade de representar de forma precisa a relação muitos-para-muitos entre Ordem_Servico e Servico. Essa entidade associativa permite armazenar não apenas o vínculo, mas também informações específicas.
+- Motivação: Uma OS pode incluir vários serviços, e um mesmo serviço pode estar em várias OS.
+- Solução: Criada a entidade Servico_Executado, registrando quantidade, valor total, autorização do cliente e data da autorização.
 
-### 2.2 Adição de status ao Pedido
-Durante a evolução do modelo de dados do sistema de e-commerce, identificou-se a necessidade de acompanhar o ciclo de vida de um pedido de forma mais estruturada, permitindo maior visibilidade do processo de compra, logística e atendimento ao cliente.
-- Motivação: Era necessário acompanhar o ciclo de vida de um pedido.
-- Solução: Adicionado o atributo `status_pedido` na entidade Pedido (em processamento, enviado, entregue, cancelado). Para complementar o refinamento tambem foi adicionado o atributo data_pedido para registrar as datas em que cada um dos pedidos foram abertos.
+### 2.2 Adição de Status da OS
+Durante a evolução do modelo, percebemos a importância de acompanhar o ciclo de vida da OS de forma estruturada.
+- Motivação: Necessidade de registrar o andamento da ordem (em análise, em execução, aguardando peças, concluída, cancelada).
+- Solução: Criada a entidade Status_OS como tabela de domínio, vinculada à OrdemServico.
 
 ### 2.3 Registro da Forma de Pagamento
-Durante a análise do processo de recebimento de valores, identificou-se a necessidade de distinguir as diferentes formas de pagamento utilizadas pelos clientes, como cartão de crédito, boleto bancário, pix, entre outros, numa relação com a entidade Pedido de 1:N. Essa diferenciação é essencial para fins de controle financeiro, conciliação bancária e geração de relatórios mais detalhados, além de permitir a implementação de regras de negócio específicas para cada tipo de pagamento.
-- Motivação: Era importante diferenciar pagamentos (cartão, boleto, pix etc.).
-- Solução: Adicionado o atributo `forma_pagamento` na entidade Pagamento.
+O controle financeiro da oficina exige o registro detalhado das formas de pagamento utilizadas pelos clientes.
+- Motivação: Diferenciar meios de pagamento e permitir pagamentos parciais.
+- Solução: Criada a entidade Forma_Pagamento, vinculada à entidade Pagamento.
 
-### 2.4 Registro da Entrega do Produto
-Foi identificada a necessidade de representar, de forma mais clara, as informações relacionadas ao processo de entrega dos pedidos, com o intuito facilitar a rastreabilidade, o controle logístico e a evolução do sistema com funcionalidades específicas, como o acompanhamento de status da entrega, previsão de chegada e informações do transportador. Era importante diferenciar pagamentos (cartão, boleto, pix etc.).
-- Motivação: Necessidade de controlar e rastrear os pedidos enviados aos clientes.
-- Solução: Foi criada a entidade Entrega, responsável por representar de forma independente os dados e eventos logísticos relacionados ao envio de um pedido. Essa nova entidade foi associada à entidade Pedido por meio de uma relação 1:N, permitindo que um pedido tenha uma ou mais entregas vinculadas a ele.
+### 2.4 Registro da Entrega do Veículo
+Era necessário representar, de forma mais clara, o momento da entrega do veículo ao cliente após a conclusão da OS.
+- Motivação: Melhorar rastreabilidade do processo e comunicação com o cliente.
+- Solução: Adicionados os atributos data_entrega e notifica_cliente à entidade Ordem_Servico, possibilitando registrar a entrega e notificar o cliente.
 
-### 2.5 Registro da Transportadora do Produto
-Identificamos a necessidade de representar, de forma estruturada, as informações referentes às empresas responsáveis pelo transporte dos pedidos. Até então, os dados de entrega estavam concentrados apenas na entidade Entrega, sem uma separação clara da transportadora utilizada, o que dificultava o controle logístico, a análise de desempenho e a manutenção de contratos e regras específicas por transportadora.
-- Motivação: Necessidade de identificar e avaliar os transporte dos produtos estabelecendo um vínculo direto entre cada entrega realizada e a transportadora responsável.
-- Solução: A introdução da entidade Transportadora abriu espaço para melhorias operacionais, análises logísticas e evoluções futuras no processo de entrega.
+### 2.5 Registro de Alterações na OS
+Durante a execução, pode haver mudanças nos serviços ou peças previstas inicialmente.
+- Motivação: Garantir histórico e rastreabilidade das alterações autorizadas pelo cliente.
+- Solução: Criada a entidade Alteracao, vinculada a entidade Ordem_Servico, para armazenar tipo de alteração, descrição, valor, data e status da alteração.
 
-### 3.0 Caso de Uso - Compra de Produtos
-O presente estudo de caso tem como objetivo demonstrar a aplicação de um modelo de dados para um sistema de gestão de vendas e logística em uma loja virtual de eletrônicos. O sistema foi desenvolvido para contemplar as principais entidades envolvidas no processo comercial, desde a realização do pedido pelo cliente até a entrega final do produto.
-A proposta é apresentar, a partir de um exemplo prático fictício, como os relacionamentos entre as entidades (Cliente, Pedido, Produto, Fornecedor, Estoque, Pagamento, Entrega e Transportadora) são utilizados para dar suporte às operações do negócio.
+### 3.0 Caso de Uso – Abertura de Ordem de Serviço
+O caso de uso demonstra como o modelo de dados é aplicado para o processo de abertura, execução e conclusão de uma OS em uma oficina mecânica. O cliente leva o veículo para manutenção, autoriza os serviços e peças necessários, e realiza o pagamento após a conclusão.
 
-### 3.1 Loja Virtual de Eletrônicos
-Para ilustrar o funcionamento do modelo, foi criado um pedido fictício realizado pelo cliente João da Silva em 10/09/2025.
+### 3.1 Processo de Reparação de Veículo
+> Este é apenas um exemplo para ilustrar como o modelo pode ser utilizado em situações reais.
+- Vamos ao exemplo prático fictício:
 🧑 Cliente
 Cliente: João da Silva
 Email: joao.silva@email.com
 Telefone: (11) 99999-8888
 
-📦 Pedido
-Pedido #1234
-Data: 10/09/2025
-Status: Pago Parcialmente
+🚗 Veículo
+Marca: Toyota
+Modelo: Corolla XEi
+Ano: 2020
+Placa: ABC-1234
 
-🛒 Produtos do Pedido (via Item_Pedido)
-Notebook Dell XPS 13 – Qtd: 1 – Valor: R$ 7.500,00
-Mouse Logitech MX Master 3S – Qtd: 2 – Valor: R$ 650,00 cada
-Total do Pedido: R$ 8.800,00
+📄 Ordem de Serviço (OS)
+OS #2025
+Data de Abertura: 10/09/2025
+Status: Em andamento
 
-🏭 Fornecedores (via Fornecedor_Produto)
-Dell Brasil → Fornece o Notebook Dell XPS 13
-Ingram Micro → Fornece tanto o Notebook Dell XPS 13 quanto o Mouse Logitech MX Master 3S
-Logitech Brasil → Fornece o Mouse Logitech MX Master 3S
+🔧 Serviços (via OrdemServico_Servico)
+Troca de óleo – R$ 150,00 – Autorizado em 10/09/2025
+Alinhamento e Balanceamento – R$ 200,00 – Autorizado em 10/09/2025
 
-🏢 Estoques (via Produto_Estoque)
-Estoque SP → Possui 10 notebooks Dell XPS 13
-Estoque RJ → Possui 50 mouses Logitech MX Master 3S
+🔩 Peças (via OrdemServico_Peca)
+Filtro de óleo – Qtd: 1 – Valor: R$ 50,00 – Autorizado em 10/09/2025
 
-💳 Pagamentos (via Pedido 1:N Pagamento)
-Pagamento 1: R$ 4.400,00 – Cartão de Crédito (Visa) – 10/09/2025
-Pagamento 2: R$ 4.400,00 – Boleto Bancário – 12/09/2025
+👨‍🔧 Mecânicos (via Equipe_OS)
+Carlos Andrade – Especialidade: Motor – Função: Execução da troca de óleo
+Marcos Lima – Especialidade: Suspensão – Função: Execução de alinhamento/balanceamento
 
-🚚 Entregas (via Pedido 1:N Entrega)
-Entrega 1 (SP → Cliente):
-Produto: Notebook Dell XPS 13
-Data: 12/09/2025
-Transportadora: JadLog
+💳 Pagamentos (via Pagamento)
+Pagamento 1: R$ 200,00 – Cartão de Crédito – 10/09/2025
+Pagamento 2: R$ 200,00 – Pix – 11/09/2025
 
-Entrega 2 (RJ → Cliente):
-Produtos: 2x Mouse Logitech MX Master 3S
-Data: 13/09/2025
-Transportadoras: DHL + Loggi
+📦 Alterações (via Alteracao)
+Nenhuma alteração registrada até o momento.
 
-> Este é apenas um exemplo para ilustrar como o modelo pode ser utilizado em situações reais.
+🚘 Entrega do Veículo
+Previsão: 12/09/2025
+Cliente será notificado por WhatsApp quando a OS for concluída.
